@@ -590,7 +590,16 @@ function addEntry(){
     if(isNaN(amt)||amt<=0){amtEl.style.borderColor='#EF4444';setTimeout(()=>{amtEl.style.borderColor='';},1200);}
     return;
   }
-  D.entries.unshift({id:uid(),desc,cat,amt,type,date:datStr(new Date())});
+  // Use today's date if viewing current month, else use last day of selected month
+  const now=new Date();
+  let entryDate;
+  if(activeYear===now.getFullYear()&&activeMonth===now.getMonth()){
+    entryDate=datStr(now); // current month → today's date
+  } else {
+    // past/future month → use last day of that month so it falls inside the cycle
+    entryDate=datStr(new Date(activeYear,activeMonth+1,0));
+  }
+  D.entries.unshift({id:uid(),desc,cat,amt,type,date:entryDate});
   save();descEl.value='';amtEl.value='';render();
 }
 function delEntry(id){D.entries=D.entries.filter(e=>e.id!==id);save();render();}
